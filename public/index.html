@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5f0">
+  <meta name="description" content="用中文表达想法，写出属于你的英文 X 草稿。">
+  <title>全球表达助手 · Global Expression</title>
+  <link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/">g<span>↗</span><span class="brand-name">全球表达助手</span></a><div class="top-meta"><span class="pill">X · ENGLISH</span><span id="connection">连接中…</span></div></header>
+  <main>
+    <section class="intro"><p class="eyebrow">YOUR IDEAS, IN YOUR OWN VOICE</p><h1>想法用中文。<br><span>表达走向世界。</span></h1><p class="subtitle">保留你的判断，让英文表达更自然。写下想法，剩下的从这里开始。</p></section>
+    <div id="demo-banner" class="notice" hidden>演示模式：展示固定英文示例，不会翻译你的输入。配置模型后即可生成真实草稿。</div>
+    <div class="workspace">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="panel-heading"><div><span class="step">01 / INPUT</span><h2 id="input-title">你想说什么？</h2></div><span class="small-tag">中文</span></div>
+        <label class="sr-only" for="source">中文原文</label><textarea id="source" maxlength="6000" placeholder="写下一个观察、一段体验，或一个还没整理好的想法。也可以用输入法的语音输入。"></textarea>
+        <div class="input-footer"><div><button id="sample" class="text-button">试试示例 ↗</button> · <button id="new-draft" class="text-button">新建草稿</button></div><span id="source-count">0 / 6000</span></div>
+        <div class="controls-grid"><label>输出形式<select id="type"><option value="post">单条帖子</option><option value="thread">Thread · 连续帖子</option></select></label><label>表达语气<select id="style"><option value="natural">自然口语</option><option value="professional">专业简洁</option></select></label></div>
+        <fieldset class="mode-field"><legend>改写程度</legend><label><input type="radio" name="mode" value="faithful" checked>忠实表达 <span>少改结构，保留原意</span></label><label><input type="radio" name="mode" value="native">X 原生表达 <span>调整节奏与开头</span></label></fieldset>
+        <details class="rules"><summary>个人发布边界 <span>可调整</span></summary><p>以下是个人偏好，命中后暂停生成或复制。关键词可能误判，模型复检也可能漏检。</p><div class="rule-options"><label><input type="checkbox" value="politics" checked>政治话题</label><label><input type="checkbox" value="sexual" checked>色情与性暗示</label><label><input type="checkbox" value="crypto" checked>加密货币</label></div></details>
+        <label class="confirm"><input id="confirmed" type="checkbox">我已确认中文原意、数字与名称</label>
+        <button id="generate" class="primary" disabled>生成英文草稿 <span>↗</span></button>
+        <p class="privacy-note">草稿仅存当前浏览器。真实生成时，原文和英文会发送至你配置的模型服务。</p>
+      </section>
+      <section class="panel output-panel" aria-labelledby="output-title">
+        <div class="panel-heading"><div><span class="step">02 / EXPRESSION</span><h2 id="output-title">你的英文草稿</h2></div><span class="small-tag">English</span></div>
+        <div id="empty" class="empty-state"><div class="empty-mark">Aa<span>↗</span></div><h3>好的表达，从你的想法开始。</h3><p>英文草稿会出现在这里。<br>你可以修改，再检查，然后复制到 X。</p><div class="empty-bottom">原意优先 <span>·</span> 人工审核 <span>·</span> 自行发布</div></div>
+        <div id="result" hidden><div id="check-status" class="status" role="status"></div><ul id="issues" class="issue-list"></ul><div id="posts"></div><details class="summary"><summary>初稿中文回译 / 要点</summary><p id="summary"></p><small>回译仅辅助理解，不代表原意已经验证。手动编辑英文后不会自动更新回译，请对照中文原文审核。</small></details><label id="review-consent-row" class="confirm" hidden><input id="review-consent" type="checkbox">我已阅读提醒并完成人工审核</label><div class="result-actions"><button id="recheck" class="secondary">重新检查</button><button id="copy-all" class="primary compact" disabled>复制全部英文</button><button id="save" class="secondary">保存草稿</button></div><p class="privacy-note">复制 Thread 后逐条发布。不会登录或自动发布到 X。</p></div>
+      </section>
+    </div>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+    <section class="history-section"><div class="history-heading"><div><span class="step">YOUR NOTEBOOK</span><h2>草稿本</h2></div><button id="clear" class="text-button">清空草稿</button></div><p id="storage-note" class="muted">保存在当前设备的浏览器中；清除浏览器数据会丢失草稿。</p><div id="history" class="history-list"></div></section>
+  </main>
+  <footer><span>GLOBAL EXPRESSION / MVP 0.1</span><span>AI 辅助表达，观点始终属于你。</span></footer>
+</body>
+</html>
