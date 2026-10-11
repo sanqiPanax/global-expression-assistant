@@ -6,7 +6,7 @@ Turn your Chinese ideas into faithful English drafts for X. A small self-hosted 
 
 ## Quick start
 
-Requires **Node.js 22+** and npm.
+Requires **Node.js 22.9+** and npm. On Windows, double-click **`start.cmd`** (keep its terminal open while using the app). Or use:
 
 ```sh
 npm ci
