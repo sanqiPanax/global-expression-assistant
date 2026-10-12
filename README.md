@@ -31,6 +31,31 @@ Each real generation makes up to **three model calls**: input review, generation
 
 API keys remain on the local server; do not paste them into source text or commit `.env`. The remote model URL must use HTTPS (loopback HTTP is allowed for local models/tests). Browser input and output text are sent to the configured model. Provider retention and training policies depend on your provider; this app cannot delete its records.
 
+### OpenCode Go
+
+Verified with a local Go subscription and `minimax-m2.5` on 2026-10-12:
+
+```dotenv
+MODEL_BASE_URL=https://opencode.ai/zen/go/v1
+MODEL_NAME=minimax-m2.5
+MODEL_API_KEY=YOUR_GO_KEY
+MODEL_SESSION_HEADER=x-opencode-session
+```
+
+Go returned `MissingSessionID` without its routing header. The app generates an identifier for its own server session and sends it through the configured header; it stays the same across generation and review calls. No key or draft content is used in that identifier.
+
+This provider sometimes wraps its JSON in one Markdown code fence despite JSON mode. The parser accepts either plain JSON or exactly one complete JSON fence; malformed JSON or surrounding prose still fails validation.
+
+One synthetic Chinese sample completed generation plus both reviews in approximately **24.7 seconds**, producing a **167-character** weighted post. A subsequent edited-number check took **6.9 seconds** and flagged `20 → 200`. This verifies connectivity and these paths, not broad writing quality or guaranteed latency. Subscription limits and available models can change; refer to your account for consumption.
+
+An optional **paid external API** smoke check is available after configuring `.env`:
+
+```sh
+node --env-file=.env scripts/live-smoke.mjs
+```
+
+It uses synthetic input, makes up to four successful model calls, and stores results only in ignored `test-results/go-live.json`. It is excluded from regular tests and CI.
+
 ## Workflow
 
 1. Type or paste Chinese; your system input method can supply speech-to-text.

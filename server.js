@@ -2,30 +2,38 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
-import { analyzePosts, checkRules, generationPrompt, numericWarnings, reviewPrompt, validateInput, validateReview } from './lib/core.js';
+import { randomUUID } from 'node:crypto';
+import { analyzePosts, checkRules, generationPrompt, numericWarnings, parseModelJSON, reviewPrompt, validateInput, validateReview } from './lib/core.js';
 
 const publicDir = fileURLToPath(new URL('./public/', import.meta.url));
 const demo = !process.env.MODEL_API_KEY || !process.env.MODEL_NAME;
 const port = Number(process.env.PORT || 3210);
 const host = process.env.HOST || '127.0.0.1';
 let busy = false;
+const providerSession = `global-expression-${randomUUID()}`;
 
 export async function modelJSON(messages) {
   const base = process.env.MODEL_BASE_URL;
   if (!base) throw new Error('尚未设置 MODEL_BASE_URL');
   const url = new URL(`${base.replace(/\/$/, '')}/chat/completions`);
   if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) throw new Error('远程模型接口必须使用 HTTPS');
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.MODEL_API_KEY}` };
+  // Optional provider routing identifier, stable for this server session.
+  // Identifies this application; it does not impersonate a coding client.
+  if (process.env.MODEL_SESSION_HEADER) {
+    if (!/^x-[a-z0-9-]*session[a-z0-9-]*$/i.test(process.env.MODEL_SESSION_HEADER)) throw new Error('MODEL_SESSION_HEADER 必须是 x- 开头的会话头名称');
+    headers[process.env.MODEL_SESSION_HEADER] = providerSession;
+  }
   const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.MODEL_API_KEY}` },
+    headers,
     body: JSON.stringify({ model: process.env.MODEL_NAME, messages, temperature: 0.2, response_format: { type: 'json_object' } }),
     signal: AbortSignal.timeout(45000), redirect: 'error'
   });
   if (!response.ok) throw new Error(`模型服务返回 HTTP ${response.status}；未自动重试，请检查服务商记录后再操作`);
   const result = await response.json();
   const content = result.choices?.[0]?.message?.content;
-  if (typeof content !== 'string' || content.length > 50000) throw new Error('模型响应无效');
-  try { return JSON.parse(content); } catch { throw new Error('模型没有返回有效 JSON，请换用支持 JSON 输出的服务'); }
+  return parseModelJSON(content);
 }
 
 async function semanticReview(source, posts, rules) {

@@ -1,8 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analyzePosts, checkRules, numericWarnings, validateInput, validateReview, generationPrompt } from '../lib/core.js';
+import { analyzePosts, checkRules, numericWarnings, parseModelJSON, validateInput, validateReview, generationPrompt } from '../lib/core.js';
 
 const input = { source: '一个想法', type: 'post', style: 'natural', mode: 'faithful', rules: ['crypto'] };
+test('model JSON accepts only plain JSON or one complete JSON fence', () => {
+  assert.deepEqual(parseModelJSON(' {"issues":[]} '), { issues: [] });
+  assert.deepEqual(parseModelJSON('```json\n{"issues":[]}\n```'), { issues: [] });
+  assert.throws(() => parseModelJSON('Explanation\n```json\n{"issues":[]}\n```'));
+  assert.throws(() => parseModelJSON('```json\n{"issues":[]}\n```\nextra'));
+  assert.throws(() => parseModelJSON('```json\n{"issues":\n```'));
+  assert.throws(() => parseModelJSON(null));
+});
 test('input validation rejects missing text and arbitrary rules', () => {
   assert.throws(() => validateInput({ ...input, source: ' ' }));
   assert.throws(() => validateInput({ ...input, rules: ['unknown'] }));
