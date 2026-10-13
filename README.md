@@ -1,6 +1,6 @@
 # Global Expression Assistant · 全球表达助手
 
-Turn your Chinese ideas into faithful English drafts for X. A small self-hosted writing tool: one text box, two styles, single posts or threads, personal topic checks, and browser-local drafts.
+Turn your Chinese ideas into faithful English drafts for X. A small self-hosted writing tool: one text box, seven tones, single posts or threads, personal topic checks, and browser-local drafts.
 
 中文想法 → 确认原意 → 英文单帖 / Thread → 编辑复检 → 复制到 X。使用输入法自带语音输入即可，本项目不录音、不登录 X、不自动发布。
 
@@ -59,12 +59,26 @@ It uses synthetic input, makes up to four successful model calls, and stores res
 ## Workflow
 
 1. Type or paste Chinese; your system input method can supply speech-to-text.
-2. Choose single post or thread, natural or professional style, faithful or X-native rewriting. Faithful is the default.
+2. Choose single post or thread, a tone, and faithful or X-native rewriting. Faithful is the default.
 3. Confirm names, numbers, and Chinese intent. Adjust personal topic preferences if needed.
 4. Generate, read the English and Chinese summary, and inspect detected issues.
 5. Editing text or settings invalidates the check. Confirm Chinese and recheck before copying.
 6. Copy a post or the entire thread, then manually paste and publish on X.
 7. Save drafts explicitly. Repeated saves update the same draft; reopening a draft requires a fresh check.
+
+Available tones:
+
+| Tone | Intended use |
+| --- | --- |
+| Natural / 自然口语 | Plain everyday observations and tool experiences |
+| Professional / 专业简洁 | Precise project and technical notes |
+| Humorous / 幽默搞笑 | Light situational irony grounded in your input, without fabricated jokes |
+| Casual / 轻松聊天 | Relaxed short sentences and conversational rhythm |
+| Storytelling / 故事分享 | Connect events already present in the input; never invent people or scenes |
+| Sharp / 克制犀利 | Direct observations that preserve uncertainty and avoid personal attacks |
+| Warm / 温和真诚 | Gentle and sincere, without invented emotions or motivational slogans |
+
+Tone affects wording and rhythm; preserving meaning takes priority. Faithful mode applies the tone subtly; X-native mode allows more restructuring. Changing a tone requires regeneration to rewrite the English; rechecking only reviews the current draft. Saved drafts retain their tone, including the original natural/professional drafts.
 
 The app uses `twitter-text` for the standard **280 weighted-character** post limit, including links and emoji. It does not target paid-account long posts. Thread copy contains blank-line-separated posts, without automatic numbering; any numbering you add must fit within the limit.
 

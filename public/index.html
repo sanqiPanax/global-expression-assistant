@@ -17,7 +17,8 @@
         <div class="panel-heading"><div><span class="step">01 / INPUT</span><h2 id="input-title">你想说什么？</h2></div><span class="small-tag">中文</span></div>
         <label class="sr-only" for="source">中文原文</label><textarea id="source" maxlength="6000" placeholder="写下一个观察、一段体验，或一个还没整理好的想法。也可以用输入法的语音输入。"></textarea>
         <div class="input-footer"><div><button id="sample" class="text-button">试试示例 ↗</button> · <button id="new-draft" class="text-button">新建草稿</button></div><span id="source-count">0 / 6000</span></div>
-        <div class="controls-grid"><label>输出形式<select id="type"><option value="post">单条帖子</option><option value="thread">Thread · 连续帖子</option></select></label><label>表达语气<select id="style"><option value="natural">自然口语</option><option value="professional">专业简洁</option></select></label></div>
+        <div class="controls-grid"><label>输出形式<select id="type"><option value="post">单条帖子</option><option value="thread">Thread · 连续帖子</option></select></label><label>表达语气<select id="style" aria-describedby="style-hint"></select></label></div>
+        <p id="style-hint" class="privacy-note"></p>
         <fieldset class="mode-field"><legend>改写程度</legend><label><input type="radio" name="mode" value="faithful" checked>忠实表达 <span>少改结构，保留原意</span></label><label><input type="radio" name="mode" value="native">X 原生表达 <span>调整节奏与开头</span></label></fieldset>
         <details class="rules"><summary>个人发布边界 <span>可调整</span></summary><p>以下是个人偏好，命中后暂停生成或复制。关键词可能误判，模型复检也可能漏检。</p><div class="rule-options"><label><input type="checkbox" value="politics" checked>政治话题</label><label><input type="checkbox" value="sexual" checked>色情与性暗示</label><label><input type="checkbox" value="crypto" checked>加密货币</label></div></details>
         <label class="confirm"><input id="confirmed" type="checkbox">我已确认中文原意、数字与名称</label>

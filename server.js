@@ -124,7 +124,7 @@ export const server = http.createServer(async (req, res) => {
       return send(res, 400, { error: message });
     } finally { busy = false; }
   }
-  const files = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
+  const files = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/styles.js': ['styles.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
   if (req.method === 'GET' && files[path]) {
     try {
       const [file, mime] = files[path];

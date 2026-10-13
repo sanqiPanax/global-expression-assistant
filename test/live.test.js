@@ -43,6 +43,17 @@ test('semantic input topic block prevents a generation request', async () => {
   try { const data = await (await post(input)).json(); assert.equal(data.blocked, true); assert.equal(calls.length, 1); }
   finally { fault = null; }
 });
+test('new tones reach generation with their own fidelity constraints', async () => {
+  const phrases = { humorous: 'Never invent an incident', casual: 'Avoid forced slang', storytelling: 'Never invent people', sharp: 'Preserve uncertainty', warm: 'invented feelings' };
+  for (const [style, phrase] of Object.entries(phrases)) {
+    calls = [];
+    const response = await post({ ...input, style });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).check.status, 'pass');
+    assert.ok(calls[1].messages[0].content.includes(phrase));
+    assert.ok(calls[1].messages[0].content.includes('Fidelity overrides style'));
+  }
+});
 test('compatible provider fenced generation completes the full pipeline', async () => {
   fault = 'fenced-generation';
   try { const data = await (await post(input)).json(); assert.equal(data.check.status, 'pass'); assert.equal(data.posts.length, 1); }

@@ -1,4 +1,10 @@
+import { STYLES } from './styles.js';
 const $ = id => document.getElementById(id);
+for (const [id, style] of Object.entries(STYLES)) {
+  const option = document.createElement('option'); option.value = id; option.textContent = style.label; $('style').append(option);
+}
+function renderStyleHint() { $('style-hint').textContent = STYLES[$('style').value].description; }
+renderStyleHint();
 const storageKey = 'global-expression-drafts-v1';
 let state = null;
 let busy = false;
@@ -116,7 +122,7 @@ function renderHistory() {
     open.addEventListener('click', () => {
       if (busy) return;
       if (($('source').value.trim() || state) && !confirm('打开这条草稿会替换当前编辑内容。未保存的修改将丢失，是否继续？')) return;
-      $('source').value = draft.input.source; $('type').value = draft.input.type; $('style').value = draft.input.style;
+      $('source').value = draft.input.source; $('type').value = draft.input.type; $('style').value = draft.input.style; renderStyleHint();
       document.querySelector(`input[name=mode][value="${draft.input.mode}"]`).checked = true;
       document.querySelectorAll('.rule-options input').forEach(el => { el.checked = draft.input.rules.includes(el.value); });
       state = structuredClone(draft.result); currentId = draft.id; invalidate(true); renderResult(); message('已载入草稿，请确认中文并重新检查。'); $('source').focus();
@@ -129,6 +135,10 @@ function renderHistory() {
 
 $('source').addEventListener('input', () => { invalidate(true); updateButtons(); });
 for (const element of document.querySelectorAll('#type, #style, input[name=mode], .rule-options input')) element.addEventListener('change', () => invalidate());
+$('style').addEventListener('change', () => {
+  renderStyleHint();
+  if (state?.posts.length) message(`已切换为“${STYLES[$('style').value].label”。点击“生成英文草稿”应用新风格。`);
+});
 $('confirmed').addEventListener('change', updateButtons);
 $('review-consent').addEventListener('change', updateButtons);
 $('generate').addEventListener('click', () => run());
@@ -155,7 +165,7 @@ $('clear').addEventListener('click', () => { if (!confirm('清空当前浏览器
 try {
   const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
   if (!Array.isArray(stored)) throw new Error('格式错误');
-  drafts = stored.filter(d => d && typeof d.id === 'string' && typeof d.updatedAt === 'string' && typeof d.input?.source === 'string' && ['post', 'thread'].includes(d.input.type) && ['natural', 'professional'].includes(d.input.style) && ['faithful', 'native'].includes(d.input.mode) && Array.isArray(d.input.rules) && Array.isArray(d.result?.posts) && d.result.posts.every(p => typeof p.text === 'string')).slice(0, 100);
+  drafts = stored.filter(d => d && typeof d.id === 'string' && typeof d.updatedAt === 'string' && typeof d.input?.source === 'string' && ['post', 'thread'].includes(d.input.type) && typeof d.input.style === 'string' && Object.hasOwn(STYLES, d.input.style) && ['faithful', 'native'].includes(d.input.mode) && Array.isArray(d.input.rules) && Array.isArray(d.result?.posts) && d.result.posts.every(p => typeof p.text === 'string')).slice(0, 100);
 } catch { $('storage-note').textContent = '本机草稿读取失败，当前页面仍可使用。'; }
 renderHistory(); updateButtons();
 try { const response = await fetch('/api/config'); if (!response.ok) throw new Error('连接失败'); const config = await response.json(); demo = config.demo; $('demo-banner').hidden = !demo; $('connection').textContent = demo ? 'DEMO MODE' : '模型已配置'; updateButtons(); }

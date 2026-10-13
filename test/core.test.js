@@ -16,6 +16,7 @@ test('input validation rejects missing text and arbitrary rules', () => {
   assert.throws(() => validateInput({ ...input, rules: ['unknown'] }));
   assert.throws(() => validateInput({ ...input, source: 'a'.repeat(6001) }));
   assert.equal(validateInput(input).source, '一个想法');
+  for (const style of ['unknown', '__proto__', 'toString']) assert.throws(() => validateInput({ ...input, style }));
 });
 test('personal rules are configurable and catch Chinese / English', () => {
   assert.equal(checkRules('谈谈比特币', ['crypto']).length, 1);
