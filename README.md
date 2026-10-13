@@ -109,6 +109,8 @@ npm test
 
 Tests cover actual HTTP flows using a mock model service, not a paid external model. They include semantic precheck blocks, output review failures, malformed responses, length rules, origin protection and concurrent request rejection.
 
+Run syntax checks after the final edit, including UI text changes, before committing. Earlier passing checks do not cover subsequent edits.
+
 Optional browser checks:
 
 ```sh

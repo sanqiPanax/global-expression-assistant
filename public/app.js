@@ -137,7 +137,7 @@ $('source').addEventListener('input', () => { invalidate(true); updateButtons();
 for (const element of document.querySelectorAll('#type, #style, input[name=mode], .rule-options input')) element.addEventListener('change', () => invalidate());
 $('style').addEventListener('change', () => {
   renderStyleHint();
-  if (state?.posts.length) message(`已切换为“${STYLES[$('style').value].label”。点击“生成英文草稿”应用新风格。`);
+  if (state?.posts.length) message(`已切换为“${STYLES[$('style').value].label}”。点击“生成英文草稿”应用新风格。`);
 });
 $('confirmed').addEventListener('change', updateButtons);
 $('review-consent').addEventListener('change', updateButtons);
