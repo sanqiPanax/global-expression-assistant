@@ -12,8 +12,11 @@ const model = http.createServer(async (req, res) => {
   const request = JSON.parse(body); calls.push(request);
   if (delay) await new Promise(r => setTimeout(r, 120));
   const isReview = request.messages[0].content.startsWith('Review');
+  const isExplanation = request.messages[0].content.startsWith('Explain');
   const data = isReview ? JSON.parse(request.messages[1].content) : null;
   let content = isReview ? { issues: [] } : { posts: ['I tried an open-source tool. It saved about 20 minutes, but one trial is not enough.'], summaryZh: '工具节省约 20 分钟，但一次测试还不够。', warnings: [] };
+  if (isExplanation) content = { summaryZh: '用过去式描述体验，用转折保留谨慎判断。', phrases: [{ english: 'one trial', meaningZh: '一次尝试', usageZh: 'trial 表示试用或尝试。' }] };
+  if (fault === 'invented-explanation' && isExplanation) content.phrases[0].english = 'not in the supplied text';
   if (fault === 'output-review' && isReview && data.posts.length) content = { issues: 'invalid' };
   if (fault === 'input-rule' && isReview && !data.posts.length) content = { issues: [{ category: 'crypto', excerpt: '某种链上资产', reason: '命中加密货币个人规则' }] };
   const serialized = fault === 'fenced-generation' && !isReview ? `\x60\x60\x60json\n${JSON.stringify(content)}\n\x60\x60\x60` : JSON.stringify(content);
@@ -53,6 +56,24 @@ test('new tones reach generation with their own fidelity constraints', async () 
     assert.ok(calls[1].messages[0].content.includes(phrase));
     assert.ok(calls[1].messages[0].content.includes('Fidelity overrides style'));
   }
+});
+test('glossary mappings are provided as data to generation and review', async () => {
+  calls = [];
+  const response = await post({ ...input, source: '用星河工具测试了20分钟', glossary: [{ zh: '星河', en: 'Nebula' }, { zh: '未出现', en: 'Absent' }] });
+  assert.equal(response.status, 200);
+  const generatedInput = JSON.parse(calls[1].messages[1].content);
+  assert.deepEqual(generatedInput.glossary, [{ zh: '星河', en: 'Nebula' }]);
+  assert.deepEqual(JSON.parse(calls[2].messages[1].content).glossary, generatedInput.glossary);
+});
+test('explanation quotes are grounded in supplied English and malformed quotes fail', async () => {
+  const payload = { ...input, text: 'I tried it, but one trial is not enough.' };
+  const explain = () => fetch(base + '/api/explain', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: base }, body: JSON.stringify(payload) });
+  calls = [];
+  const response = await explain();
+  assert.equal(response.status, 200); assert.equal((await response.json()).phrases[0].english, 'one trial');
+  assert.equal(calls.length, 1);
+  fault = 'invented-explanation';
+  try { assert.equal((await explain()).status, 400); } finally { fault = null; }
 });
 test('compatible provider fenced generation completes the full pipeline', async () => {
   fault = 'fenced-generation';
