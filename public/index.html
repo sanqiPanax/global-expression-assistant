@@ -12,12 +12,13 @@
   <main>
     <section class="intro"><p class="eyebrow">YOUR IDEAS, IN YOUR OWN VOICE</p><h1>想法用中文。<br><span>表达走向世界。</span></h1><p class="subtitle">保留你的判断，让英文表达更自然。写下想法，剩下的从这里开始。</p></section>
     <div id="demo-banner" class="notice" hidden>演示模式：展示固定英文示例，不会翻译你的输入。配置模型后即可生成真实草稿。</div>
+    <div id="startup-error" class="notice" role="alert" hidden></div>
     <div class="workspace">
       <section class="panel input-panel" aria-labelledby="input-title">
         <div class="panel-heading"><div><span class="step">01 / INPUT</span><h2 id="input-title">你想说什么？</h2></div><span class="small-tag">中文</span></div>
         <label class="sr-only" for="source">中文原文</label><textarea id="source" maxlength="6000" placeholder="写下一个观察、一段体验，或一个还没整理好的想法。也可以用输入法的语音输入。"></textarea>
         <div class="input-footer"><div><button id="sample" class="text-button">试试示例 ↗</button> · <button id="new-draft" class="text-button">新建草稿</button></div><span id="source-count">0 / 6000</span></div>
-        <div class="controls-grid"><label>输出形式<select id="type"><option value="post">单条帖子</option><option value="thread">Thread · 连续帖子</option></select></label><label>表达语气<select id="style" aria-describedby="style-hint"></select></label></div>
+        <div class="controls-grid"><label>输出形式<select id="type"><option value="post">单条帖子</option><option value="thread">Thread · 连续帖子</option></select></label><label>表达语气<select id="style" aria-describedby="style-hint"><option value="natural">自然口语</option><option value="professional">专业简洁</option><option value="humorous">幽默搞笑</option><option value="casual">轻松聊天</option><option value="storytelling">故事分享</option><option value="sharp">克制犀利</option><option value="warm">温和真诚</option></select></label></div>
         <p id="style-hint" class="privacy-note"></p>
         <div class="pair-controls"><label><input id="two-versions" type="checkbox">同一想法生成两版</label><label id="second-style-row" hidden>第二版语气<select id="second-style"></select></label><p class="privacy-note">两版分别生成与检查，真实模式会增加 API 用量。第二版失败时保留第一版。</p></div>
         <fieldset class="mode-field"><legend>改写程度</legend><label><input type="radio" name="mode" value="faithful" checked>忠实表达 <span>少改结构，保留原意</span></label><label><input type="radio" name="mode" value="native">X 原生表达 <span>调整节奏与开头</span></label></fieldset>

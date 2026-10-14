@@ -46,6 +46,7 @@ try {
   ok(await page.locator('#copy-all').isDisabled(), 'loaded result requires fresh review');
   ok(await page.locator('#style').inputValue() === 'humorous', 'new tone restored from saved draft');
   await page.reload();
+  await page.waitForFunction(() => document.getElementById('connection').textContent === 'DEMO MODE');
   ok(await page.locator('.history-card').count() === 1, 'draft survives reload');
   await page.locator('.history-card button').first().click();
   ok(await page.locator('#style').inputValue() === 'humorous', 'new-tone draft survives storage validation after reload');
@@ -84,5 +85,16 @@ try {
   await livePage.locator('#review-consent').check();
   ok(await livePage.locator('#copy-all').isEnabled(), 'acknowledged warning allows copy');
   ok(errors.length === 0, `no browser exceptions: ${errors.join(', ')}`);
+  const brokenContext = await browser.newContext();
+  const broken = await brokenContext.newPage();
+  await broken.route('**/library.js', route => route.fulfill({ status: 404, contentType: 'application/json', body: '{"error":"not found"}' }));
+  await broken.goto(base);
+  await broken.waitForSelector('#startup-error:not([hidden])');
+  ok((await broken.locator('#startup-error').textContent()).includes('旧版'), 'missing new module explains stale server');
+  ok(await broken.locator('#style option').count() === 7, 'failed module loading never leaves an empty tone selector');
+  ok(await broken.locator('#generate').isDisabled(), 'failed startup cannot pretend generation works');
+  await broken.locator('#source').fill('等待重启时保留的中文');
+  ok(await broken.locator('#source').inputValue() === '等待重启时保留的中文', 'startup failure preserves editable input');
+  await brokenContext.close();
   console.log(`Browser checks passed: ${assertions} assertions; desktop and mobile screenshots saved.`);
 } finally { await browser.close(); await new Promise(r => server.close(r)); }

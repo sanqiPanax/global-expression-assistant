@@ -95,7 +95,7 @@ try {
   await page.locator('#backup-file').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
   await page.waitForFunction(() => document.getElementById('message').textContent.includes('导入失败'));
   ok(await page.evaluate(key => localStorage.getItem(key), LIBRARY_KEY) === beforeInvalid, 'invalid import leaves all data untouched');
-  await page.reload(); ok(await page.locator('.publication-card').count() === 1 && await page.locator('.phrase-card').count() === 1, 'publications and phrases persist across reload');
+  await page.reload(); await page.waitForFunction(() => document.getElementById('connection').textContent === '模型已配置'); ok(await page.locator('.publication-card').count() === 1 && await page.locator('.phrase-card').count() === 1, 'publications and phrases persist across reload');
   await mkdir('test-results', { recursive: true }); await page.screenshot({ path: 'test-results/library-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'learning library fits mobile viewport');

@@ -15,6 +15,8 @@ npm start
 
 Open **http://127.0.0.1:3210**. With no API credentials, the application runs in **demo mode**: fixed sample text, not a translation of your input. You can test editing, rules, copying, and saved drafts without paying for a model.
 
+After updating the code, stop the old server terminal (`Ctrl+C`) before running `start.cmd` again, then refresh the page. An old Node process can serve new HTML while lacking routes for newly added modules. The page now retains fallback tone options and shows a startup error instead of silently displaying an empty selector when a module cannot load.
+
 ## Connect a model
 
 Copy `.env.example` to `.env`, then configure:

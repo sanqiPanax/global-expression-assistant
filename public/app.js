@@ -1,12 +1,15 @@
-import { STYLES } from './styles.js';
-import { LIBRARY_KEY, LEGACY_KEY, emptyLibrary, matchesSearch, mergeLibraries, migrateDrafts, parseTags, validateLibrary, validatePublicationUrl } from './library.js';
-import { createSpeaker } from './speech.js';
+async function startApp() {
+const [{ STYLES }, { LIBRARY_KEY, LEGACY_KEY, emptyLibrary, matchesSearch, mergeLibraries, migrateDrafts, parseTags, validateLibrary, validatePublicationUrl }, { createSpeaker }] = await Promise.all([
+  import('./styles.js'), import('./library.js'), import('./speech.js')
+]);
 const $ = id => document.getElementById(id);
+$('style').replaceChildren();
 for (const [id, style] of Object.entries(STYLES)) {
   const option = document.createElement('option'); option.value = id; option.textContent = style.label; $('style').append(option);
 }
 function renderStyleHint() { $('style-hint').textContent = STYLES[$('style').value].description; }
 renderStyleHint();
+$('second-style').replaceChildren();
 for (const [id, style] of Object.entries(STYLES)) { const option = document.createElement('option'); option.value = id; option.textContent = style.label; $('second-style').append(option); }
 $('second-style').value = 'humorous';
 let library = emptyLibrary();
@@ -461,3 +464,16 @@ speaker = createSpeaker($('voice'), $('speech-rate'), $('speech-status'), update
 renderLibrary(); updateButtons();
 try { const response = await fetch('/api/config'); if (!response.ok) throw new Error('连接失败'); const config = await response.json(); demo = config.demo; $('demo-banner').hidden = !demo; $('connection').textContent = demo ? 'DEMO MODE' : '模型已配置'; updateButtons(); }
 catch { $('connection').textContent = '服务连接失败'; message('无法连接本地服务，请检查终端是否正在运行。'); }
+}
+await startApp().catch(error => {
+  let notice = document.getElementById('startup-error');
+  if (!notice) {
+    notice = document.createElement('div'); notice.id = 'startup-error'; notice.className = 'notice'; notice.setAttribute('role', 'alert');
+    (document.querySelector('main') || document.body).prepend(notice);
+  }
+  notice.hidden = false;
+  notice.textContent = '页面初始化失败：本地服务可能仍在运行旧版，或新版脚本未能加载。请关闭旧服务窗口，重新运行 start.cmd，再刷新页面。当前页面的输入未被清空。';
+  document.getElementById('connection').textContent = '页面加载失败';
+  document.querySelectorAll('button').forEach(button => { button.disabled = true; });
+  console.error('Application startup failed', error);
+});
