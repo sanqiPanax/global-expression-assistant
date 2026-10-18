@@ -33,22 +33,22 @@ Each real generation makes up to **three model calls**: input review, generation
 
 API keys remain on the local server; do not paste them into source text or commit `.env`. The remote model URL must use HTTPS (loopback HTTP is allowed for local models/tests). Browser input and output text are sent to the configured model. Provider retention and training policies depend on your provider; this app cannot delete its records.
 
-### OpenCode Go
+### Verified provider: DeepSeek official API
 
-Verified with a local Go subscription and `minimax-m2.5` on 2026-10-12:
+Verified on 2026-10-18 with the official DeepSeek API and `deepseek-flash`:
 
 ```dotenv
-MODEL_BASE_URL=https://opencode.ai/zen/go/v1
-MODEL_NAME=minimax-m2.5
-MODEL_API_KEY=YOUR_GO_KEY
-MODEL_SESSION_HEADER=x-opencode-session
+MODEL_BASE_URL=https://api.deepseek.com
+MODEL_NAME=deepseek-flash
+MODEL_API_KEY=YOUR_DEEPSEEK_KEY
 ```
 
-Go returned `MissingSessionID` without its routing header. The app generates an identifier for its own server session and sends it through the configured header; it stays the same across generation and review calls. No key or draft content is used in that identifier.
+No routing header is required, so `MODEL_SESSION_HEADER` stays empty. On that run the synthetic single-post pipeline (input review, generation, output review) completed in about **4.3 seconds** and produced a **189-character** weighted post; the blocked-topic check answered in 2 ms; the edited-number check took **1.3 seconds** and flagged `20 → 200`. This verifies connectivity and these paths, not broad writing quality or guaranteed latency. Refer to your provider dashboard for consumption.
 
-This provider sometimes wraps its JSON in one Markdown code fence despite JSON mode. The parser accepts either plain JSON or exactly one complete JSON fence; malformed JSON or surrounding prose still fails validation.
+Earlier revisions were verified with an OpenCode Go subscription and `minimax-m2.5` (2026-10-12: about 24.7 seconds for the full pipeline, 6.9 seconds for the edited-number check). That subscription expired, and the DeepSeek configuration above replaced it. The two provider-compatibility mechanisms below are kept for providers that need them:
 
-One synthetic Chinese sample completed generation plus both reviews in approximately **24.7 seconds**, producing a **167-character** weighted post. A subsequent edited-number check took **6.9 seconds** and flagged `20 → 200`. This verifies connectivity and these paths, not broad writing quality or guaranteed latency. Subscription limits and available models can change; refer to your account for consumption.
+- A provider that requires a routing identifier can use `MODEL_SESSION_HEADER`. The app generates an identifier for its own server session and sends it through the configured header; it stays the same across generation and review calls. No key or draft content is used in that identifier.
+- Some providers wrap their JSON in one Markdown code fence despite JSON mode. The parser accepts either plain JSON or exactly one complete JSON fence; malformed JSON or surrounding prose still fails validation.
 
 An optional **paid external API** smoke check is available after configuring `.env`:
 
